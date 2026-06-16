@@ -1,0 +1,37 @@
+{
+  "version": 1,
+  "author": "KysЬ",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "wokwi-arduino-uno", "id": "uno", "top": 0, "left": 0, "attrs": {} },
+    {
+      "type": "wokwi-lcd1602",
+      "id": "lcd1",
+      "top": -339.2,
+      "left": -119.2,
+      "attrs": { "pins": "i2c" }
+    },
+    {
+      "type": "wokwi-membrane-keypad",
+      "id": "keypad1",
+      "top": -165.2,
+      "left": 504.8,
+      "attrs": {}
+    }
+  ],
+  "connections": [
+    [ "lcd1:SDA", "uno:A4", "cyan", [ "h-67.2", "v547.4", "h428.4" ] ],
+    [ "lcd1:SCL", "uno:A5", "magenta", [ "h-86.4", "v547.5", "h457.1" ] ],
+    [ "lcd1:VCC", "uno:5V", "red", [ "h-105.6", "v585.7", "h380.8" ] ],
+    [ "lcd1:GND", "uno:GND.1", "black", [ "h-57.6", "v172.8", "h268.8" ] ],
+    [ "keypad1:C4", "uno:2", "blue", [ "v124.8", "h-201.9", "v-508.8", "h-233.9" ] ],
+    [ "keypad1:C3", "uno:3", "blue", [ "v115.2", "h-201.75", "v-489.6", "h-233.8" ] ],
+    [ "keypad1:C2", "uno:4", "blue", [ "v105.6", "h-201.6", "v-470.4", "h-233.7" ] ],
+    [ "keypad1:C1", "uno:5", "blue", [ "v96", "h-201.7", "v-451.2", "h-233.6" ] ],
+    [ "keypad1:R4", "uno:6", "green", [ "v86.4", "h-221", "v-422.4", "h-214.3" ] ],
+    [ "keypad1:R3", "uno:7", "green", [ "v76.8", "h-221.1", "v-403.2", "h-214.2" ] ],
+    [ "keypad1:R2", "uno:8", "green", [ "v67.2", "h-221.2", "v-384", "h-220.8", "v153" ] ],
+    [ "keypad1:R1", "uno:9", "green", [ "v57.6", "h-220.8", "v-364.8", "h-221" ] ]
+  ],
+  "dependencies": {}
+}
