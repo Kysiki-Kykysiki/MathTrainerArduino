@@ -1,11 +1,16 @@
-#include <Arduino.h>
-#include <LiquidCrystal_I2C.h>
+#include "Arduino.h"
+#include <Servo.h>
+#include <NewPing.h>
 #include <Keypad.h>
+#include <string.h>
+#include <LiquidCrystal_I2C.h>
 
-const int LCD_COLS = 16;
-const int LCD_ROWS = 2;
+const int LCD_COLS = 20;
+const int LCD_ROWS = 4;
 
 LiquidCrystal_I2C lcd(0x27, LCD_COLS, LCD_ROWS);
+
+#include <Keypad.h>
 
 const byte ROWS = 4;
 const byte COLS = 4;
@@ -19,19 +24,30 @@ char keys[ROWS][COLS] = {
 byte colPins[COLS] = { 5, 4, 3, 2 }; // Pins connected to C1, C2, C3, C4
 byte rowPins[ROWS] = { 9, 8, 7, 6 }; // Pins connected to R1, R2, R3, R4
 
+
 Keypad keypad = Keypad(makeKeymap(keys), rowPins, colPins, ROWS, COLS);
 
-// глоб. переменные
+const unsigned long TIME_LIMIT_MC = 10000;
+
+
+
+// GLOBAL 
+
 int a,b;
-char op;
+String op_plus;
+String op_minus;
+String op_multiply;
+int score;
 int correctAnswer;
-int score = 0;
 String userInput = "";
 
-void newQuestion(){
-    a = random(2,10);
-    b = random(2,10);
-    op = '+';
+void newQuestion_Plus()
+{
+  
+    a = random(2, 10);
+    b = random(2, 10);
+
+    op_plus = "+";
     correctAnswer = a+b;
 
     userInput = "";
@@ -39,76 +55,183 @@ void newQuestion(){
     lcd.clear();
     lcd.setCursor(0,0);
     lcd.print(a);
-    lcd.print(" ");
-    lcd.print(op);
-    lcd.print(" ");
+    lcd.print("  ");
+    lcd.print(op_plus);
+    lcd.print("  ");
     lcd.print(b);
-    lcd.print(" = ?");
+
+    lcd.print("  =?");
 
     lcd.setCursor(0,1);
-    lcd.print("Otvet: ");
+    lcd.print("Otvet:  ");
+
+
+
+
 }
 
-void setup() {
+void newQuestion_Minus()
+{
+  
+    a = random(2, 10);
+    b = random(2, 10);
+
+    op_minus = "-";
+    correctAnswer = a-b;
+
+    userInput = "";
+
+    lcd.clear();
+    lcd.setCursor(0,0);
+    lcd.print(a);
+    lcd.print("  ");
+    lcd.print(op_minus);
+    lcd.print("  ");
+    lcd.print(b);
+
+    lcd.print("  =?");
+
+    lcd.setCursor(0,1);
+    lcd.print("Otvet:  ");
+
+
+
+
+}
+void newQuestion_Multiply()
+{
+  
+    a = random(2, 10);
+    b = random(2, 10);
+
+    op_multiply = "*";
+    correctAnswer = a*b;
+
+    userInput = "";
+
+    lcd.clear();
+    lcd.setCursor(0,0);
+    lcd.print(a);
+    lcd.print("  ");
+    lcd.print(op_multiply);
+    lcd.print("  ");
+    lcd.print(b);
+
+    lcd.print("  =?");
+
+    lcd.setCursor(0,1);
+    lcd.print("Otvet:  ");
+
+
+
+
+}
+
+int randomQuestion()
+{
+    int c;
+    c = random (1,4);
+    return c;
+}
+void executeRandomFunction() {
+    
+    int choice = randomQuestion(); 
+
+    
+    switch (choice) {
+        case 1:
+            newQuestion_Plus();   
+            break;
+        case 2:
+            newQuestion_Minus();   
+            break;
+        case 3:
+            newQuestion_Multiply(); 
+            break;
+    }
+}
+
+void drawTimeBar()
+{
+
+}
+
+void setup() 
+{
     Serial.begin(9600);
     lcd.init();
+    
+
     lcd.backlight();
 
-    randomSeed(analogRead(A3));
+ randomSeed(analogRead(A3));
+ lcd.setCursor(0,0);
+ lcd.print("Math TrainerV1.0");
+ lcd.setCursor(0,1);
+ lcd.print("Press any key...");
 
-    lcd.setCursor(0,0);
-    lcd.print("Math TrainerV1.0");
-    lcd.setCursor(0,1);
-    lcd.print("Press any key...");
+ while(keypad.getKey() == NO_KEY)
+ {
 
-    while(keypad.getKey() == NO_KEY) {}
+ }
 
-    newQuestion();
 
+ newQuestion_Plus();
 }
 
-void loop() {
-    char key = keypad.getKey();
-    if (key == NO_KEY) return;
+void loop() 
+{
+ 
+char key = keypad.getKey();
+if (key == NO_KEY) return;
 
-    if (key >= '0' && key <= '9') {
-        if(userInput.length() < 4) {
-            userInput += key;
-            lcd.setCursor(7,1);
-            lcd.print("     ");
-            lcd.setCursor(7,1);
-            lcd.print(userInput);
-        }
-    }
 
-    else if(key == '*'){
-        userInput = "";
+if (key >= '0' && key <= '9')
+{
+    if(userInput.length() < 4)
+    {
+        userInput += key;
         lcd.setCursor(7,1);
-        lcd.print("          ");
+        lcd.print("     ");
+        lcd.setCursor(7,1);
+        lcd.print(userInput);
     }
+}
 
-    else if(key == '#') {
-        if(userInput.length() == 0) return;
-        int answer = userInput.toInt();
+else if (key == '*')
+{
+    userInput = "";
+    lcd.setCursor(7,1);
+    lcd.print("       ");
 
-        lcd.clear();
-        lcd.setCursor(0,0);
-        if (answer == correctAnswer){
-            score++;
-            lcd.print("Pravilno :)");
-        }
-        else {
-            score = 0;
-            lcd.print("!Pravilno :( ");
-            lcd.print(correctAnswer);
-        }
+}
+else if (key == '#')
+{
+    if(userInput.length() == 0) return;
 
-        lcd.setCursor(0,1);
-        lcd.print("Schet: ");
-        lcd.print(score);
+    int answer = userInput.toInt();
 
-        delay(2000);
-        newQuestion();
+    lcd.clear();
+    lcd.setCursor(0,0);
+    if(answer == correctAnswer)
+    {
+        score++;
+        lcd.print("CORRECT :)");
     }
+    else 
+    {
+        score = 0;
+        lcd.print("!CORRECT  ");
+        lcd.print(correctAnswer);
+    }
+    
+    lcd.setCursor(0,1);
+    lcd.print("Score:");
+    lcd.print(score);
+    
+    delay(2000);
+    executeRandomFunction();
+    
+}
 
 }
