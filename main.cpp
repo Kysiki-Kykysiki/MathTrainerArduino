@@ -2,8 +2,8 @@
 #include <LiquidCrystal_I2C.h>
 #include <Keypad.h>
 
-const int LCD_COLS = 16;
-const int LCD_ROWS = 2;
+const int LCD_COLS = 20;
+const int LCD_ROWS = 4;
 
 LiquidCrystal_I2C lcd(0x27, LCD_COLS, LCD_ROWS);
 
@@ -21,12 +21,16 @@ byte rowPins[ROWS] = { 9, 8, 7, 6 }; // Pins connected to R1, R2, R3, R4
 
 Keypad keypad = Keypad(makeKeymap(keys), rowPins, colPins, ROWS, COLS);
 
+const unsigned long TIME_LIMIT_MC = 10000;
+
 // глоб. переменные
 int a,b;
 char op;
 int correctAnswer;
 int score = 0;
 String userInput = "";
+unsigned long questionStart = 0;
+int lastBarBlocks = -1;
 
 void newQuestion(){
     a = random(2,10);
@@ -49,6 +53,24 @@ void newQuestion(){
     lcd.print("Otvet: ");
 }
 
+
+void drawTimeBar(){
+    unsigned long elps = millis() - questionStart;
+    if (elps > TIME_LIMIT_MC) elps = TIME_LIMIT_MC;
+
+    int blocks = LCD_COLS - (int)(elps * LCD_COLS / TIME_LIMIT_MC);
+    if(blocks == lastBarBlocks) return;
+
+    lcd.setCursor(0,3);
+    for(int i = 0; i < LCD_COLS; i++){
+        lcd.write(i < blocks ? (uint8_t)0xFF : ' ');
+    }
+}
+
+void showResult(bool correct, bool timeout){
+    
+}
+
 void setup() {
     Serial.begin(9600);
     lcd.init();
@@ -68,6 +90,7 @@ void setup() {
 }
 
 void loop() {
+    drawTimeBar();
     char key = keypad.getKey();
     if (key == NO_KEY) return;
 
@@ -109,6 +132,8 @@ void loop() {
 
         delay(2000);
         newQuestion();
+        
     }
+    
 
 }
