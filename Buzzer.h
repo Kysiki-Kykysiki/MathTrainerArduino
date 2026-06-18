@@ -8,6 +8,6 @@ private:
 public:
     Buzzer(int BuzzPin); 
     
-    void on(unsigned int frequency, unsigned long duration); // Включить звук
+    void on(); 
     void off(); 
 };

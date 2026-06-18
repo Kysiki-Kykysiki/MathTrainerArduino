@@ -8,9 +8,9 @@ Buzzer::Buzzer(int BuzzPin)
 }
 
 
-void Buzzer::on(unsigned int frequency, unsigned long duration) 
+void Buzzer::on() 
 {
-    tone(pin, frequency, duration);
+    tone(8, 262, 250);
 }
 
 
