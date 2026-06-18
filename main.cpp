@@ -1,4 +1,3 @@
-#include <Arduino.h>
 #include <LiquidCrystal_I2C.h>
 #include <Keypad.h>
 
@@ -24,7 +23,7 @@ Keypad keypad = Keypad(makeKeymap(keys), rowPins, colPins, ROWS, COLS);
 const unsigned long TIME_LIMIT_MC = 10000;
 
 // глоб. переменные
-int a,b;
+int a,b,ope;
 char op;
 int correctAnswer;
 int score = 0;
@@ -33,10 +32,17 @@ unsigned long questionStart = 0;
 int lastBarBlocks = -1;
 
 void newQuestion(){
-    a = random(2,10);
-    b = random(2,10);
-    op = '+';
-    correctAnswer = a+b;
+    questionStart = millis();
+    a = random(0,100);
+    b = random(0,100);
+    ope = random(0,1);
+    if(ope == 0){
+      op = '+';
+      correctAnswer = a+b;
+    }else if(ope == 1){
+      op = '-';
+      correctAnswer = a-b;
+    }
 
     userInput = "";
 
@@ -56,7 +62,7 @@ void newQuestion(){
 
 void drawTimeBar(){
     unsigned long elps = millis() - questionStart;
-    if (elps > TIME_LIMIT_MC) elps = TIME_LIMIT_MC;
+    if (elps > TIME_LIMIT_MC) {elps = TIME_LIMIT_MC;digitalWrite(13, HIGH);}
 
     int blocks = LCD_COLS - (int)(elps * LCD_COLS / TIME_LIMIT_MC);
     if(blocks == lastBarBlocks) return;
@@ -75,6 +81,9 @@ void setup() {
     Serial.begin(9600);
     lcd.init();
     lcd.backlight();
+    pinMode(13, OUTPUT);
+    pinMode(12, OUTPUT);
+    pinMode(A1, OUTPUT);
 
     randomSeed(analogRead(A3));
 
@@ -93,6 +102,16 @@ void loop() {
     drawTimeBar();
     char key = keypad.getKey();
     if (key == NO_KEY) return;
+
+    if (key == 'A') {
+        if(userInput.length() < 4) {
+            userInput += "-";
+            lcd.setCursor(7,1);
+            lcd.print("     ");
+            lcd.setCursor(7,1);
+            lcd.print(userInput);
+        }
+    }
 
     if (key >= '0' && key <= '9') {
         if(userInput.length() < 4) {
@@ -119,11 +138,14 @@ void loop() {
         if (answer == correctAnswer){
             score++;
             lcd.print("Pravilno :)");
-        }
-        else {
-            score = 0;
+            digitalWrite(12, HIGH);
+            analogWrite(A1, 1023);
+        
+        }else{
+          score = 0;
             lcd.print("!Pravilno :( ");
             lcd.print(correctAnswer);
+             digitalWrite(13, HIGH);
         }
 
         lcd.setCursor(0,1);
@@ -132,7 +154,9 @@ void loop() {
 
         delay(2000);
         newQuestion();
-        
+        digitalWrite(13, LOW);
+        digitalWrite(12, LOW);
+        analogWrite(A1, 0);
     }
     
 
