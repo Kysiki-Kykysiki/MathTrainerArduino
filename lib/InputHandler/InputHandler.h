@@ -21,4 +21,4 @@ private:
     byte colPins[COLS];
     Keypad keypad;
     String buffer;
-}
+};

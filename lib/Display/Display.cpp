@@ -1,6 +1,5 @@
 #include "Display.h"
 
-
 Display::Display(byte address, byte c, byte r): lcd(address, c,r), cols(c), rows(r){}
 void Display::begin(){
     lcd.init();

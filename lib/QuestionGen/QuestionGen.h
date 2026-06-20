@@ -15,6 +15,7 @@ private:
     int maxVal;    
 public:
     
-    QuestionGen(int min, int max); 
-    Question next(); 
+    // ИСПРАВЛЕНО: значения по умолчанию, чтобы работал вызов "QuestionGen generator;" в main.cpp
+    QuestionGen(int min = 2, int max = 10);
+    Question next();
 };

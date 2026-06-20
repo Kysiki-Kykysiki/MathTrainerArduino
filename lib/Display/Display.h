@@ -18,4 +18,4 @@ private:
     byte cols;
     byte rows;
 
-}
+};
